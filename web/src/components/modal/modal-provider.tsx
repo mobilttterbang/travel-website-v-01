@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { CloseIcon } from "@/components/ui/icons";
 
 type ModalContextValue = {
@@ -21,6 +21,20 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
   const openModal = useCallback((c: ReactNode) => setContent(c), []);
   const closeModal = useCallback(() => setContent(null), []);
+
+  useEffect(() => {
+    if (!content) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [content, closeModal]);
 
   return (
     <ModalContext.Provider value={{ openModal, closeModal }}>

@@ -7,7 +7,15 @@ declare global {
 }
 
 function createClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    // Without this, node-postgres silently falls back to localhost:5432 and the
+    // failure surfaces as an unrelated "can't reach 127.0.0.1" error at query time.
+    throw new Error(
+      "DATABASE_URL is not set. Add it to your environment (locally in .env, or in your hosting platform's environment variables) and redeploy."
+    );
+  }
+  const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter });
 }
 

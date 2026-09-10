@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useHouseFilters } from "@/components/filters/use-house-filters";
 import { FilterIcon, SearchIcon } from "@/components/ui/icons";
 import { BED_OPTIONS, DEFAULT_FILTERS, RATE_OPTIONS, TYPE_OPTIONS } from "@/lib/houses";
@@ -8,6 +8,22 @@ import { BED_OPTIONS, DEFAULT_FILTERS, RATE_OPTIONS, TYPE_OPTIONS } from "@/lib/
 export function BrowseSearchBar({ countries, cities }: { countries: string[]; cities: string[] }) {
   const { filters, query, setFilter, setQuery, clearFilters, push } = useHouseFilters();
   const [open, setOpen] = useState(false);
+  const [draftQuery, setDraftQuery] = useState(query);
+  const [lastQuery, setLastQuery] = useState(query);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep the input in step when the query changes from elsewhere (Reset, back button).
+  if (query !== lastQuery) {
+    setLastQuery(query);
+    setDraftQuery(query);
+  }
+
+  // Each keystroke would otherwise be its own server navigation.
+  function onSearchChange(value: string) {
+    setDraftQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setQuery(value), 300);
+  }
   const searchActive = !!query || filters.type !== DEFAULT_FILTERS.type || filters.country !== DEFAULT_FILTERS.country || filters.city !== DEFAULT_FILTERS.city || filters.maxPrice !== DEFAULT_FILTERS.maxPrice || filters.beds !== DEFAULT_FILTERS.beds || filters.rate !== DEFAULT_FILTERS.rate;
 
   return (
@@ -20,8 +36,8 @@ export function BrowseSearchBar({ countries, cities }: { countries: string[]; ci
           <SearchIcon className="flex-none text-muted" />
           <input
             type="text"
-            defaultValue={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={draftQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search a house, city or style — try “villa” or “Bogor”"
             className="min-w-0 flex-1 border-0 bg-transparent text-[15.5px] outline-none"
           />
