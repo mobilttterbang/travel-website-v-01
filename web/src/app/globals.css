@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --sc-accent: #ec3013;
+  --sc-accent-dark: #dd2b0f;
+  --sc-accent-deep: #ae1800;
+  --sc-ink: #201e1d;
+  --sc-muted: #605d5d;
+  --sc-body: #444141;
+  --sc-bg: #f3f2f2;
+  --sc-r: 24px;
+  --sc-r-lg: 32px;
+  --sc-pill: 999px;
+  --sc-blur: 22px;
+}
+
+@theme inline {
+  --color-accent: var(--sc-accent);
+  --color-accent-dark: var(--sc-accent-dark);
+  --color-accent-deep: var(--sc-accent-deep);
+  --color-ink: var(--sc-ink);
+  --color-muted: var(--sc-muted);
+  --color-body: var(--sc-body);
+  --color-bg: var(--sc-bg);
+  --radius-sc: var(--sc-r);
+  --radius-sc-lg: var(--sc-r-lg);
+  --radius-pill: var(--sc-pill);
+  --font-sans: var(--font-archivo);
+}
+
+body {
+  background: var(--sc-bg);
+  color: var(--sc-ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--sc-accent-deep);
+}
+a:hover {
+  color: var(--sc-accent);
+}
+
+::selection {
+  background: rgba(236, 48, 19, 0.22);
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--sc-accent);
+  outline-offset: 2px;
+}
+
+.rail::-webkit-scrollbar {
+  height: 8px;
+}
+.rail::-webkit-scrollbar-thumb {
+  background: rgba(32, 30, 29, 0.22);
+  border-radius: 999px;
+}
+.rail::-webkit-scrollbar-track {
+  background: rgba(32, 30, 29, 0.06);
+  border-radius: 999px;
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, var(--glass-opacity, 0.62));
+    backdrop-filter: blur(var(--sc-blur)) saturate(150%);
+    -webkit-backdrop-filter: blur(var(--sc-blur)) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+  }
+}
